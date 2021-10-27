@@ -12,11 +12,21 @@ Finalmente se debe copiar el dataset descargado dentro de esta carpeta.
 ## Configuracion entorno
 Para configuirar el entorno primero se debe crear una imgen docker con el dockerFile.
 ```
-docker build -t "spark" .
+sudo docker build -t "spark" .
 ```
 Posteriormente se debe correr el archivo docker compose.
 ```
-docker-compose up
+sudo docker-compose up
 ```
-
+Luego, se debe acceder al contenerdor master (ver el id que tiene usando docker ps -a).
+```
 sudo docker exec -it <container_id> /bin/bash
+```
+Ejecución de dataClean.py
+```
+spark-2.4.1/bin/spark-submit --master spark://master:7077 /usr/src/dataClean/dataClean.py /tmp/data/Chicago_Crimes_2012_to_2017.csv /tmp/data/dataClean/
+```
+Ejecución de machineL.py
+```
+spark-2.4.1/bin/spark-submit --master spark://master:7077 /usr/src/machineLearning/machineL.py
+```
