@@ -9,7 +9,7 @@ Especificamente se utilizan los datos comprendidos entre el año 2012 y el año 
 Al ser un archivo demasiado grande no se carga dentro del repositorio del proyecto. Para agregar los datos al proyecto, se deben descargar de la pagina y posteriormente, crear una carpeta con el nombre "data" dentro del directorio de proyecto. 
 Finalmente se debe copiar el dataset descargado dentro de esta carpeta. 
 
-## Configuracion entorno
+## Configuracion de entorno y ejecución - Contenedores
 Para configuirar el entorno primero se debe crear una imgen docker con el dockerFile.
 ```
 sudo docker build -t "spark" .
@@ -30,3 +30,64 @@ Ejecución de machineL.py
 ```
 spark-2.4.1/bin/spark-submit --master spark://master:7077 /usr/src/machineLearning/machineL.py
 ```
+
+### Kafka - Comandos básicos
+
+Se debe ingresar la carpeta /bin dentro del servidor kafka. 
+
+* kafka-topics --list --zookeeper zookeeper:2181
+* kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic sample_topic2
+* kafka-topics --zookeeper zookeeper:2181 --topic topic --delete
+* kafka-console-producer --broker-list kafka:9092 --topic sample_topic
+* kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from-beginning
+
+### Kafka - Conectores
+
+* cd etc/kafka/
+* cp connect-standalone.properties ~
+* cp connect-file-sink.properties ~/
+* cp connect-file-source.properties ~/
+* connect-standalone.properties
+    echo "bootstrap.servers=kafka:9092" > connect-standalone.properties
+    echo "key.converter=org.apache.kafka.connect.json.JsonConverter" >> connect-standalone.properties
+    echo "value.converter=org.apache.kafka.connect.json.JsonConverter" >> connect-standalone.properties
+    echo "key.converter.schemas.enable=false" >> connect-standalone.properties
+    echo "value.converter.schemas.enable=false" >> connect-standalone.properties
+    echo "offset.flush.interval.ms=10000" >> connect-standalone.properties
+    echo "offset.storage.file.filename=/tmp/connect.offsets" >> connect-standalone.properties
+    echo "plugin.path=/usr/share/java" >> connect-standalone.properties
+    echo "plugin.path=/usr/share/java,/usr/local/share/kafka/plugins,/opt/connectors" >> connect-standalone.properties
+
+    bootstrap.servers=kafka:9092
+    key.converter=org.apache.kafka.connect.json.JsonConverter
+    value.converter=org.apache.kafka.connect.json.JsonConverter
+    key.converter.schemas.enable=false
+    value.converter.schemas.enable=false
+    offset.flush.interval.ms=10000
+    offset.storage.file.filename=/tmp/connect.offsets
+    plugin.path=/usr/share/java
+* connect-file-sink.properties
+    echo "name=local-file-sink" > connect-file-sink.properties
+    echo "connector.class=FileStreamSink" > connect-file-sink.properties
+    echo "tasks.max=1" > connect-file-sink.properties
+    echo "file=/home/appuser/outcome_log.txt" > connect-file-sink.properties
+    echo "topics=test" > connect-file-sink.properties
+
+    name=local-file-sink
+    connector.class=FileStreamSink
+    tasks.max=1
+    file=/home/appuser/outcome_log.txt
+    topics=test
+* connect-file-source.properties
+    echo "name=local-file-source" > connect-file-source.properties
+    echo "connector.class=FileStreamSource" >> connect-file-source.properties
+    echo "tasks.max=1" >> connect-file-source.properties
+    echo "file=/home/appuser/access_log.txt" >> connect-file-source.properties
+    echo "topic=test" >> connect-file-source.properties
+
+    name=local-file-source
+    connector.class=FileStreamSource
+    tasks.max=1
+    file=/home/appuser/access_log.txt
+    topic=test
+* connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
