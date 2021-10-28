@@ -48,46 +48,102 @@ Se debe ingresar la carpeta /bin dentro del servidor kafka.
 * cp connect-file-sink.properties ~/
 * cp connect-file-source.properties ~/
 * connect-standalone.properties
+    ```
     echo "bootstrap.servers=kafka:9092" > connect-standalone.properties
+    ```
+    ```
     echo "key.converter=org.apache.kafka.connect.json.JsonConverter" >> connect-standalone.properties
+    ```
+    ```
     echo "value.converter=org.apache.kafka.connect.json.JsonConverter" >> connect-standalone.properties
+    ```
+    ```
     echo "key.converter.schemas.enable=false" >> connect-standalone.properties
+    ```
+    ```
     echo "value.converter.schemas.enable=false" >> connect-standalone.properties
+    ```
+    ```
     echo "offset.flush.interval.ms=10000" >> connect-standalone.properties
+    ```
+    ```
     echo "offset.storage.file.filename=/tmp/connect.offsets" >> connect-standalone.properties
+    ```
+    ```
     echo "plugin.path=/usr/share/java" >> connect-standalone.properties
+    ```
+    ```
     echo "plugin.path=/usr/share/java,/usr/local/share/kafka/plugins,/opt/connectors" >> connect-standalone.properties
+    ```
 
     bootstrap.servers=kafka:9092
+
     key.converter=org.apache.kafka.connect.json.JsonConverter
+
     value.converter=org.apache.kafka.connect.json.JsonConverter
+
     key.converter.schemas.enable=false
+
     value.converter.schemas.enable=false
+
     offset.flush.interval.ms=10000
+
     offset.storage.file.filename=/tmp/connect.offsets
+    
     plugin.path=/usr/share/java
+
 * connect-file-sink.properties
+    ```
     echo "name=local-file-sink" > connect-file-sink.properties
+    ```
+    ```
     echo "connector.class=FileStreamSink" > connect-file-sink.properties
+    ```
+    ```
     echo "tasks.max=1" > connect-file-sink.properties
+    ```
+    ```
     echo "file=/home/appuser/outcome_log.txt" > connect-file-sink.properties
+    ```
+    ```
     echo "topics=test" > connect-file-sink.properties
+    ```
 
     name=local-file-sink
+
     connector.class=FileStreamSink
+
     tasks.max=1
+
     file=/home/appuser/outcome_log.txt
+
     topics=test
+
 * connect-file-source.properties
+    ```
     echo "name=local-file-source" > connect-file-source.properties
+    ```
+    ```
     echo "connector.class=FileStreamSource" >> connect-file-source.properties
+    ```
+    ```
     echo "tasks.max=1" >> connect-file-source.properties
+    ```
+    ```
     echo "file=/home/appuser/access_log.txt" >> connect-file-source.properties
+    ```
+    ```
     echo "topic=test" >> connect-file-source.properties
+    ```
 
     name=local-file-source
+
     connector.class=FileStreamSource
+
     tasks.max=1
+
     file=/home/appuser/access_log.txt
+
     topic=test
+    
 * connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
