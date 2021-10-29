@@ -34,12 +34,21 @@ spark-2.4.1/bin/spark-submit --master spark://master:7077 /usr/src/machineLearni
 ### Kafka - Comandos básicos
 
 Se debe ingresar la carpeta /bin dentro del servidor kafka. 
-
-* kafka-topics --list --zookeeper zookeeper:2181
-* kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic sample_topic2
-* kafka-topics --zookeeper zookeeper:2181 --topic topic --delete
-* kafka-console-producer --broker-list kafka:9092 --topic sample_topic
-* kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from-beginning
+```
+kafka-topics --list --zookeeper zookeeper:2181
+```
+```
+kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic sample_topic2
+```
+```
+kafka-topics --zookeeper zookeeper:2181 --topic topic --delete
+```
+```
+kafka-console-producer --broker-list kafka:9092 --topic sample_topic
+```
+```
+kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from-beginning
+```
 
 ### Kafka - Conectores
 
@@ -145,5 +154,68 @@ Se debe ingresar la carpeta /bin dentro del servidor kafka.
     file=/home/appuser/access_log.txt
 
     topic=test
-    
+
 * connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+
+## Configuracion de entorno y ejecución - Sandbox
+
+### Kafka - Comandos básicos
+
+Se debe ingresar la carpeta /usr/hdp/current/kafka-broker
+
+Listar todos los temas.
+```
+./kafka-topics.sh --list --zookeeper sandbox-hdp.hortonworks.com:2181
+```
+Crear un nuevo tema.
+```
+./kafka-topics.sh --create --zookeeper sandbox-hdp.hortonworks.com:2181 --replication-factor 1 --partitions 1 --topic sample_topic
+```
+Eliminar un tema.
+```
+./kafka-topics.sh --zookeeper sandbox-hdp.hortonworks.com:2181 --topic topic --delete
+```
+Activar productor.
+```
+./kafka-console-producer.sh --broker-list sandbox-hdp.hortonworks.com:6667 --topic sample_topic
+```
+Activar consumidor.
+```
+./kafka-console-consumer.sh --bootstrap-server sandbox-hdp.hortonworks.com:6667 --topic sample_topic --from-beginning
+```
+Cambiar tiempo de retención. Default retention.ms = 604800
+```
+./kafka-topics.sh --zookeeper sandbox-hdp.hortonworks.com:2181 --alter --topic sample_topic --config retention.ms=1000 
+```
+
+### Kafka - Conectores
+
+* cd /usr/hdp/current/kafka-broker/conf
+* cp connect-standalone.properties ~/
+* cp connect-file-sink.properties ~/
+* cp connect-file-source.properties ~/
+* connect-standalone.properties
+    bootstrap.servers=sandbox-hdp.hortonworks.com:6667
+
+* connect-file-sink.properties
+    name=local-file-sink
+
+    connector.class=FileStreamSink
+
+    tasks.max=1
+
+    file=/home/maria_dev/outcome_log.txt
+
+    topics=sample_topic
+
+* connect-file-source.properties
+    name=local-file-source
+
+    connector.class=FileStreamSource
+
+    tasks.max=1
+
+    file=/home/maria_dev/access_log.txt
+
+    topic=sample_test
+* ./connect-standalone.sh ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
