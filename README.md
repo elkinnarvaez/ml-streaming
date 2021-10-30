@@ -75,9 +75,6 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     cp connect-file-source.properties ~/
     ```
 * connect-standalone.properties
-    bootstrap.servers=sandbox-hdp.hortonworks.com:6667
-
-* connect-standalone.properties
     ```
     echo "bootstrap.servers=kafka:9092" > connect-standalone.properties
     ```
@@ -139,7 +136,10 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     ```
     echo "topic=test" >> connect-file-source.properties
     ```
-* connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+* Ejecutar el conector
+    ```
+    connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+    ```
 
 ## Sandbox
 ```
@@ -213,7 +213,10 @@ Cambiar tiempo de retención. Default retention.ms = 604800
     file=/home/maria_dev/access_log.txt
     topic=sample_topic
     ```
-* ./connect-standalone.sh ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+* Ejectutar el conector
+    ```
+    ./connect-standalone.sh ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+    ```
 
 ### Flume
 ```
