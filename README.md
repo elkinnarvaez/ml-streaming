@@ -9,7 +9,7 @@ Especificamente se utilizan los datos comprendidos entre el año 2012 y el año 
 Al ser un archivo demasiado grande no se carga dentro del repositorio del proyecto. Para agregar los datos al proyecto, se deben descargar de la pagina y posteriormente, crear una carpeta con el nombre "data" dentro del directorio de proyecto. 
 Finalmente se debe copiar el dataset descargado dentro de esta carpeta. 
 
-## Configuracion de entorno y ejecución - Contenedores
+## Contenedores
 Para configuirar el entorno primero se debe crear una imgen docker con el dockerFile.
 ```
 sudo docker build -t "spark" .
@@ -34,28 +34,49 @@ spark-2.4.1/bin/spark-submit --master spark://master:7077 /usr/src/machineLearni
 ### Kafka - Comandos básicos
 
 Se debe ingresar la carpeta /bin dentro del servidor kafka. 
+
+Listar todos los temas.
 ```
 kafka-topics --list --zookeeper zookeeper:2181
 ```
+Crear un nuevo tema.
 ```
 kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic sample_topic2
 ```
+Eliminar un tema.
 ```
 kafka-topics --zookeeper zookeeper:2181 --topic topic --delete
 ```
+Activar productor.
 ```
 kafka-console-producer --broker-list kafka:9092 --topic sample_topic
 ```
+Activar consumidor.
 ```
 kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from-beginning
 ```
 
 ### Kafka - Conectores
 
-* cd etc/kafka/
-* cp connect-standalone.properties ~
-* cp connect-file-sink.properties ~/
-* cp connect-file-source.properties ~/
+* Entrar al servidor de kafka
+    ```
+    cd /etc/kafka/
+    ```
+* Copiar el archivo connect-standalone.properties
+    ``` 
+    cp connect-standalone.properties ~/
+    ```
+*  Copiar el archivo connect-file-sink.properties
+    ```
+    cp connect-file-sink.properties ~/
+    ```
+* Copiar el archivo connect-file-source.properties
+    ```
+    cp connect-file-source.properties ~/
+    ```
+* connect-standalone.properties
+    bootstrap.servers=sandbox-hdp.hortonworks.com:6667
+
 * connect-standalone.properties
     ```
     echo "bootstrap.servers=kafka:9092" > connect-standalone.properties
@@ -85,22 +106,6 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     echo "plugin.path=/usr/share/java,/usr/local/share/kafka/plugins,/opt/connectors" >> connect-standalone.properties
     ```
 
-    bootstrap.servers=kafka:9092
-
-    key.converter=org.apache.kafka.connect.json.JsonConverter
-
-    value.converter=org.apache.kafka.connect.json.JsonConverter
-
-    key.converter.schemas.enable=false
-
-    value.converter.schemas.enable=false
-
-    offset.flush.interval.ms=10000
-
-    offset.storage.file.filename=/tmp/connect.offsets
-    
-    plugin.path=/usr/share/java
-
 * connect-file-sink.properties
     ```
     echo "name=local-file-sink" > connect-file-sink.properties
@@ -118,16 +123,6 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     echo "topics=test" > connect-file-sink.properties
     ```
 
-    name=local-file-sink
-
-    connector.class=FileStreamSink
-
-    tasks.max=1
-
-    file=/home/appuser/outcome_log.txt
-
-    topics=test
-
 * connect-file-source.properties
     ```
     echo "name=local-file-source" > connect-file-source.properties
@@ -144,24 +139,16 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     ```
     echo "topic=test" >> connect-file-source.properties
     ```
-
-    name=local-file-source
-
-    connector.class=FileStreamSource
-
-    tasks.max=1
-
-    file=/home/appuser/access_log.txt
-
-    topic=test
-
 * connect-standalone ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
 
-## Configuracion de entorno y ejecución - Sandbox
-
+## Sandbox
+```
+cd /usr/hdp/current/kafka-broker
+```
+```
+cd bin
+```
 ### Kafka - Comandos básicos
-
-Se debe ingresar la carpeta /usr/hdp/current/kafka-broker
 
 Listar todos los temas.
 ```
@@ -173,7 +160,7 @@ Crear un nuevo tema.
 ```
 Eliminar un tema.
 ```
-./kafka-topics.sh --zookeeper sandbox-hdp.hortonworks.com:2181 --topic topic --delete
+./kafka-topics.sh --zookeeper sandbox-hdp.hortonworks.com:2181 --delete --topic sample_topic
 ```
 Activar productor.
 ```
@@ -190,32 +177,76 @@ Cambiar tiempo de retención. Default retention.ms = 604800
 
 ### Kafka - Conectores
 
-* cd /usr/hdp/current/kafka-broker/conf
-* cp connect-standalone.properties ~/
-* cp connect-file-sink.properties ~/
-* cp connect-file-source.properties ~/
+* Entrar al servidor de kafka
+    ```
+    cd /usr/hdp/current/kafka-broker/conf
+    ```
+* Copiar el archivo connect-standalone.properties
+    ``` 
+    cp connect-standalone.properties ~/
+    ```
+*  Copiar el archivo connect-file-sink.properties
+    ```
+    cp connect-file-sink.properties ~/
+    ```
+* Copiar el archivo connect-file-source.properties
+    ```
+    cp connect-file-source.properties ~/
+    ```
 * connect-standalone.properties
+    ```
     bootstrap.servers=sandbox-hdp.hortonworks.com:6667
-
+    ```
 * connect-file-sink.properties
+    ```
     name=local-file-sink
-
     connector.class=FileStreamSink
-
     tasks.max=1
-
     file=/home/maria_dev/outcome_log.txt
-
     topics=sample_topic
-
+    ```
 * connect-file-source.properties
+    ```
     name=local-file-source
-
     connector.class=FileStreamSource
-
     tasks.max=1
-
     file=/home/maria_dev/access_log.txt
-
-    topic=sample_test
+    topic=sample_topic
+    ```
 * ./connect-standalone.sh ~/connect-standalone.properties ~/connect-file-source.properties ~/connect-file-sink.properties
+
+### Flume
+```
+cd /usr/hdp/current/flume-server
+```
+```
+cd bin
+```
+* Archivo de configuración para un agente
+    ```
+    # Name of the components on this agent
+    a1.sources = r1
+    a1.sinks = k1
+    a1.channels = c1
+
+    # Describe/configure the source
+    a1.sources.r1.type = netcat
+    a1.sources.r1.bind = localhost
+    a1.sources.r1.port = 44444
+
+    # Describethe sink
+    a1.sinks.k1.type = logger
+
+    # Use a channel that buffers events in memory
+    a1.channels.c1.type = memory
+    a1.channels.c1.capacity = 1000
+    a1.channels.c1.transactionCapacity = 100
+
+    # Bind the source and sink to the channel
+    a1.sources.r1.channels = c1
+    a1.sinks.k1.channel = c1
+    ```
+* Ejecutar el agente
+    ```
+    sudo flume-ng agent --conf conf --conf-file /home/maria_dev/simple-flume-flow.conf --name a1 -Dflume.root.logger=INFO, console
+    ```
