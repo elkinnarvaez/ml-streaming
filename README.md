@@ -225,6 +225,7 @@ cd /usr/hdp/current/flume-server
 ```
 cd bin
 ```
+#### Ejemplo 1
 * Archivo de configuración para un agente
     ```
     # Name of the components on this agent
@@ -261,3 +262,48 @@ cd bin
     ```
     tail -f /var/log/flume/flume.log
     ```
+
+#### Ejemplo 2
+* Archivo de configuración para un agente
+    ```
+    # Name of the components on this agent
+    a1.sources = r1
+    a1.sinks = k1
+    a1.channels = c1
+
+    # Describe/configure the source
+    a1.sources.r1.type = spooldir
+    a1.sources.r1.spoolDir = /home/maria_dev/spool
+    a1.sources.r1.fileHeader = true
+    a1.sources.r1.interceptros = timestampInterceptor
+    a1.sources.r1.interceptors.timestampInterceptor.type = timestamp
+
+    # Describethe sink
+    a1.sinks.k1.type = hdfs
+    a1.sinks.k1.hdfs.path = /user/maria_dev/flume/%y-%m-%d/%H%M/%S
+    a1.sinks.k1.hdfs.filePrefix = events-
+    a1.sinks.k1.hdfs.round = true
+    a1.sinks.k1.hdfs.roundValue = 10
+    a1.sinks.k1.hdfs.roundUnit = minute
+
+    # Use a channel that buffers events in memory
+    a1.channels.c1.type = memory
+    a1.channels.c1.capacity = 1000
+    a1.channels.c1.transactionCapacity = 100
+
+    # Bind the source and sink to the channel
+    a1.sources.r1.channels = c1
+    a1.sinks.k1.channel = c1
+    ```
+* Crear directorio local y en el cluster
+    ```
+    mkdir spool
+    ```
+    ```
+    hadoop fs -ls
+    ```
+    ```
+    hadoop fs -mkdir flume
+    ```
+* Ejecutarel agente
+    sudo flume-ng agent --conf conf --conf-file /home/maria_dev/flume-spooldir.conf --name a1 -Dflume.root.logger=INFO,console
