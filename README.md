@@ -225,7 +225,7 @@ cd /usr/hdp/current/flume-server
 ```
 cd bin
 ```
-#### Nercat
+#### Example: Netcat
 * Archivo de configuración para un agente
     ```
     # Name of the components on this agent
@@ -263,7 +263,7 @@ cd bin
     tail -f /var/log/flume/flume.log
     ```
 
-#### Spooldir
+#### Example: Spooldir
 * Archivo de configuración para un agente
     ```
     # Name of the components on this agent
@@ -310,7 +310,7 @@ cd bin
     sudo flume-ng agent --conf conf --conf-file /home/maria_dev/flume-spooldir.conf --name a1 -Dflume.root.logger=INFO,console -Dlog4j.configurationFile=/usr/hdp/current/flume-server/conf/log4j2.xml
     ```
 
-#### Spark and FLume
+#### Example: Spark and Flume
 * Archivo de configuración para un agente
     ```
     # Name of the components on this agent
@@ -345,4 +345,6 @@ cd bin
     ```
 * Copiar el archivo acess_log.txt en /home/maria_dev/spool
 * Código Pyspark
-    
+
+#### Proyecto
+* 
