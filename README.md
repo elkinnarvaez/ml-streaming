@@ -253,3 +253,11 @@ cd bin
     ```
     sudo flume-ng agent --conf conf --conf-file /home/maria_dev/simple-flume-flow.conf --name a1 -Dflume.root.logger=INFO, console
     ```
+* Enviar datos a través de telnet
+    ```
+    telnet localhost 44444
+    ```
+* Verificar el archivo log
+    ```
+    tail -f /var/log/flume/flume.log
+    ```
