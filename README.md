@@ -311,40 +311,57 @@ cd bin
     ```
 
 #### Example: Spark and Flume
-* Archivo de configuración para un agente
+* Archivo de configuración para el agente
     ```
-    # Name of the components on this agent
-    a1.sources = r1
-    a1.sinks = k1
-    a1.channels = c1
 
-    # Describe/configure the source
-    a1.sources.r1.type = spooldir
-    a1.sources.r1.spoolDir = /home/maria_dev/spool
-    a1.sources.r1.fileHeader = true
-    a1.sources.r1.interceptors = timestampInterceptor
-    a1.sources.r1.interceptors.timestampInterceptor.type = timestamp
-
-    # Describethe sink
-    a1.sinks.k1.type = avro
-    a1.sinks.k1.hostname = localhost
-    a1.sinks.k1.port = 9092
-
-    # Use a channel that buffers events in memory
-    a1.channels.c1.type = memory
-    a1.channels.c1.capacity = 1000
-    a1.channels.c1.transactionCapacity = 100
-
-    # Bind the source and sink to the channel
-    a1.sources.r1.channels = c1
-    a1.sinks.k1.channel = c1
     ```
-* Crear directorio local y en el cluster
+* Crear directorio spool
+* Copiar el archivo acess_log.txt en el directorio previamente creado
+* Crear carpeta checkpoint
     ```
-    mkdir spool
+    sudo mkdir checkpoint
     ```
-* Copiar el archivo acess_log.txt en /home/maria_dev/spool
-* Código Pyspark
+* Código Python
+    ```
+
+    ```
+* Ejecutar código en Spark
+    ```
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit --packages org.apache.spark:spark-streaming-flume_2.11:2.3.0 SparkFlume.py
+    ```
+    ```
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit --jars spark-streaming-flume-assembly_2.12-2.4.8.jar SparkFlume.py
+    ```
+* Ejecutar agente de Flume
+    
+    Entrar a la carpeta
+    ```
+    cd /usr/hdp/current/flume-server/bin
+    ```
+    Ejecutar el script
+    ```
+    sudo flume-ng agent --conf conf --conf-file /home/maria_dev/ml-streaming/example/spark-streaming-flume.conf --name a1 -Dlog4j.configurationFile=/usr/hdp/current/flume-server/conf/log4j2.xml
+    ```
+* Hacer cambios en la carpeta spool
+    ```
+    cp access_log.txt ./spool/log1.txt
+    ```
+    ```
+    hadoop fs -copyFromLocal access_log.txt /user/maria_dev/spool
+    ```
 
 #### Proyecto
-* 
+* Entrar a la carpeta ml-streaming
+    ```
+    cd /home/maria_dev/ml-streaming/
+    ```
+* Tranferir datos usando FTP dentro de la carpeta /home/maria_dev/ml-streaming/data
+* Montar datos en el cluster usando hadoop fs -copyFromLocal file.txt /user/maria_dev/data
+* Ejecutar la limpieza de datos
+    ```
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit data_cleaning.py /user/maria_dev/data/Chicago_Crimes_2012_to_2017.csv /user/maria_dev/data/cleanedData
+    ```
+* Ejecutar algoritmos de aprendizaje
+    ```
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit machine_learning.py
+    ```
