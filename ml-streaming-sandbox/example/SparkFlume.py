@@ -40,6 +40,7 @@ if __name__ == "__main__":
     # Sort and print the results
     sortedResults = urlCounts.transform(lambda rdd: rdd.sortBy(lambda x: 
     x[1], False))
+    print("-----------------------------------------------")
     # print(sortedResults)
     sortedResults.pprint()
     ssc.checkpoint("/user/maria_dev/ml-streaming/example/checkpoint")

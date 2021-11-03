@@ -1,13 +1,9 @@
 # proyectoBigData
-Proyecto del curso de Big Data, utilizando servicio dockerizado de apache spark, servicio que contiene
-un container master y dos containers worker. El master escucha el en puerto 9080, el worker1 y worker2 escuchan en los puertos 
-8081 y 8082 correspondientemente. 
 
 ## Configuracion DataSet 
 Los datos que se utilizan para este proyecto se encuentran en el siguiente enlace: https://www.kaggle.com/currie32/crimes-in-chicago?select=Chicago_Crimes_2012_to_2017.csv.
 Especificamente se utilizan los datos comprendidos entre el año 2012 y el año 2017 (367 MB).   
-Al ser un archivo demasiado grande no se carga dentro del repositorio del proyecto. Para agregar los datos al proyecto, se deben descargar de la pagina y posteriormente, crear una carpeta con el nombre "data" dentro del directorio de proyecto. 
-Finalmente se debe copiar el dataset descargado dentro de esta carpeta. 
+Al ser un archivo demasiado grande no se carga dentro del repositorio del proyecto. Para agregar los datos al proyecto, se deben descargar de la pagina y posteriormente agregarlos al proyecto.
 
 ## Contenedores
 Para configuirar el entorno primero se debe crear una imgen docker con el dockerFile.
@@ -142,14 +138,14 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic sample_topic --from
     ```
 
 ## Sandbox
+
+### Kafka - Comandos básicos
 ```
 cd /usr/hdp/current/kafka-broker
 ```
 ```
 cd bin
 ```
-### Kafka - Comandos básicos
-
 Listar todos los temas.
 ```
 ./kafka-topics.sh --list --zookeeper sandbox-hdp.hortonworks.com:2181
@@ -344,10 +340,7 @@ cd bin
     ```
 * Hacer cambios en la carpeta spool
     ```
-    cp access_log.txt ./spool/log1.txt
-    ```
-    ```
-    hadoop fs -copyFromLocal access_log.txt /user/maria_dev/spool
+    sudo cp access_log.txt ./spool/log1.txt
     ```
 
 #### Proyecto
@@ -356,10 +349,10 @@ cd bin
     cd /home/maria_dev/ml-streaming/
     ```
 * Tranferir datos usando FTP dentro de la carpeta /home/maria_dev/ml-streaming/data
-* Montar datos en el cluster usando hadoop fs -copyFromLocal file.txt /user/maria_dev/data
+* Montar datos en el cluster usando hadoop fs -copyFromLocal /home/maria_dev/ml-streaming/data/data.csv /user/maria_dev/ml-streaming/data
 * Ejecutar la limpieza de datos
     ```
-    sudo /usr/hdp/current/spark2-client/bin/spark-submit data_cleaning.py /user/maria_dev/data/Chicago_Crimes_2012_to_2017.csv /user/maria_dev/data/cleanedData
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit data_cleaning.py /user/maria_dev/ml-streaming/data/Chicago_Crimes_2012_to_2017.csv /user/maria_dev/ml-streaming/data/cleanedData
     ```
 * Ejecutar algoritmos de aprendizaje
     ```
