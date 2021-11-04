@@ -27,6 +27,9 @@ def extractURLRequest(line):
                 return requestFields[1]
  
  
+def compute(rdd):
+    print(rdd.count())
+
 if __name__ == "__main__":
  
     sc = SparkContext(appName="StreamingFlumeLogAggregator")
@@ -34,17 +37,13 @@ if __name__ == "__main__":
     ssc = StreamingContext(sc, 1)
  
     flumeStream = FlumeUtils.createStream(ssc, "localhost", 9092)
+
+    # dstream = flumeStream.reduceByWindow(lambda x, y: x + y, lambda x, y : x - y, 10, 1)
  
-    lines = flumeStream.map(lambda x: x[1])
-    urls = lines.map(extractURLRequest)
+    # # Sort and print the results
+    # sortedResults = urlCounts.transform(lambda rdd: rdd.sortBy(lambda x: x[1], False))
+    flumeStream.foreachRDD(compute)
  
-    # Reduce by URL over a 300-second window sliding every 1 second:
-    urlCounts = urls.map(lambda x: (x, 1)).reduceByKeyAndWindow(lambda x, y: x + y, lambda x, y : x - y, 300, 1)
- 
-    # Sort and print the results
-    sortedResults = urlCounts.transform(lambda rdd: rdd.sortBy(lambda x: x[1], False))
-    sortedResults.pprint()
- 
-    ssc.checkpoint("/user/maria_dev/ml-streaming/example/checkpoint")
+    ssc.checkpoint("/user/maria_dev/ml-streaming/checkpoint")
     ssc.start()
     ssc.awaitTermination()

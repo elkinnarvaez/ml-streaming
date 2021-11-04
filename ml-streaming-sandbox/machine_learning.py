@@ -11,7 +11,7 @@ if __name__ == "__main__":
     spark=SparkSession.builder.appName('MachineLearning').getOrCreate()
 
     #carga de datos
-    df = spark.read.csv("/user/maria_dev/data/cleanedData/*.csv", sep=',', header= True, inferSchema=True)
+    df = spark.read.csv("/user/maria_dev/ml-streaming/data/cleanedData/*.csv", sep=',', header= True, inferSchema=True)
 
     #vectorizacion de los atributos
     vector = VectorAssembler(inputCols = ['Domestic', 'Beat', 'District', 'Community Area', 'X Coordinate', 'Y Coordinate', 

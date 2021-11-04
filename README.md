@@ -343,18 +343,54 @@ cd bin
     sudo cp access_log.txt ./spool/log1.txt
     ```
 
-#### Proyecto
+#### Proyecto: Flume
 * Entrar a la carpeta ml-streaming
     ```
     cd /home/maria_dev/ml-streaming/
     ```
 * Tranferir datos usando FTP dentro de la carpeta /home/maria_dev/ml-streaming/data
-* Montar datos en el cluster usando hadoop fs -copyFromLocal /home/maria_dev/ml-streaming/data/data.csv /user/maria_dev/ml-streaming/data
+* Montar datos en el cluster
+    ```
+    hadoop fs -copyFromLocal /home/maria_dev/ml-streaming/data/Chicago_Crimes_2012_to_2017.csv /user/maria_dev/ml-streaming/data
+    ```
 * Ejecutar la limpieza de datos
     ```
     sudo /usr/hdp/current/spark2-client/bin/spark-submit data_cleaning.py /user/maria_dev/ml-streaming/data/Chicago_Crimes_2012_to_2017.csv /user/maria_dev/ml-streaming/data/cleanedData
     ```
-* Ejecutar algoritmos de aprendizaje
+* Ejecutar algoritmos de aprendizaje (sin streaming)
     ```
     sudo /usr/hdp/current/spark2-client/bin/spark-submit machine_learning.py
     ```
+* Ubicar datos limpios en la carpeta /home/maria_dev/ml-streaming/data/cleanedData
+* Archivo de configuración de Flume
+    ```
+
+    ```
+* Ejecutar código en Spark
+    ```
+    sudo /usr/hdp/current/spark2-client/bin/spark-submit --packages org.apache.spark:spark-streaming-flume_2.11:2.3.0 machine_learning_streaming_flume.py
+    ```
+* Ejecutar agente de Flume
+    
+    Entrar a la carpeta
+    ```
+    cd /usr/hdp/current/flume-server/bin
+    ```
+    Ejecutar el script
+    ```
+    sudo flume-ng agent --conf conf --conf-file /home/maria_dev/ml-streaming/spark-streaming-flume.conf --name a1 -Dlog4j.configurationFile=/usr/hdp/current/flume-server/conf/log4j2.xml
+    ```
+* Hacer cambios en la carpeta spool
+    ```
+    cd data/cleanedData
+    ```
+    ```
+    sudo cp data.csv /home/maria_dev/ml-streaming/spool
+    ```
+
+#### Proyecto: Structured Streaming
+* Entrar a la carpeta ml-streaming
+    ```
+    cd /home/maria_dev/ml-streaming/
+    ```
+* sudo /usr/hdp/current/spark2-client/bin/spark-submit machine_learning_streaming.py
